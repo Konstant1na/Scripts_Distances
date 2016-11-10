@@ -175,14 +175,14 @@ write.table(dataset,paste0(out_path,"/","merged_tableE.txt"))
 #####################
 
 
-setwd("C:/Users/Konstantina/Desktop/Distance/merged_tables/")
+setwd("C:/Users/Konstantina/Desktop/Distance/Comparison/merged_tables")
 
 CS<- read.table("merged_tableCS.txt", h=T)
 E<- read.table("merged_tableE.txt", h=T)
 
 CSnE<- merge(CS,E, by= c("link_id","id_no"))
 
-write.table(CSnE, "merged_tableF.txt")
+write.table(CSnE, "CSnE.txt")
 
 
 
