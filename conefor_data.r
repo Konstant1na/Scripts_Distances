@@ -25,7 +25,7 @@ Compl<- Compl[,c(1,3,4,6,10)]
 
 #Distances#
 
-out_path= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/euclidean"
+out_path= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/data/euclidean"
 
 for (i in unique(Compl$id_no)){
 
@@ -33,9 +33,7 @@ for (i in unique(Compl$id_no)){
 	dt<- dt[, c(2,3,5)]
 	head(dt)
 	
-	#a<- unique(dt$Dist)
-	#print(a)
-	write.table(dt, paste0(out_path,"/","Distances_", i,".txt"), col.names= F)
+	write.table(dt, paste0(out_path,"/","Distances_", i,".txt"), col.names= F,row.names=F)
 	
 	}
 
@@ -48,7 +46,7 @@ for (i in unique(Compl$id_no)){
 
 #Distances#
 
-out_path= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/circuitscape"
+out_path= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/data/circuitscape"
 
 for (i in unique(Compl$id_no)){
 
@@ -56,7 +54,7 @@ for (i in unique(Compl$id_no)){
 	dt<- dt[, c(2,3,4)]
 	head(dt)
 	
-	write.table(dt, paste0(out_path,"/","Distances_", i,".txt"), col.names=F)
+	write.table(dt, paste0(out_path,"/","Distances_", i,".txt"), col.names=F,row.names=F)
 	
 	}
 
@@ -67,12 +65,39 @@ for (i in unique(Compl$id_no)){
 ####### Nodes #######	
 #####################
 
+library(plyr)
+library(microbenchmark)
+
+setwd("C:/Users/Konstantina/Desktop/Distance/Comparison/raw/rasters_and_shp_cells")
+out_path= "C:/Users/Konstantina/Desktop/Distance/Comparison/merged_tables"
 
 
+file_list <- list.files()
+df <- ldply(file_list, read.dbf)
+#write.table(df,paste0(out_path,"/dbf_ALL"))
+
+setwd(out_path)
+
+dbf_All<- read.table("dbf_All", h=T)
+colnames(dbf_All) [3] <- "from_node_.x"
+
+Compl<- read.table("CSnE_info.txt", h=T)
+Compl<- Compl[,c(1,3,4,6,10)]	
+
+
+Nodes<- merge(Compl, dbf_All, by= c("id_no", "from_node_.x"))	
+
+out_path2= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/data/nodes"
+for (i in unique(Nodes$id_no)){
+
+	a<- subset(Nodes, id_no==i)
+	a<- a[, c(2,9)]
 	
-	
-	
-	
+	write.table(unique(a),paste0(out_path2, "/","Nodes_", i,".txt"), col.names=F, row.names=F)
+}
+
+
+
 	
 
 #####################

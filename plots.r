@@ -39,17 +39,17 @@ Compl$id_no<- as.factor(Compl$id_no)
 	
 	
 #IUCNhab
-out_path= "C:/Users/Konstantina/Desktop/Distance/Comparison/plots/IUCNhab"
+out_path= "C:/Users/Konstantina/Desktop/Distance/Comparison/plots/lowRes"
 
-for (i in unique(Compl$IUCNhab)){
+for (i in unique(Compl$DistC)){
 
-	a<- subset(Compl, IUCNhab==i)
+	a<- subset(Compl, DistC==i)
 	
 	cols = colorRampPalette(brewer.pal(12, "Paired"))
 	mypal = cols(length(unique(a$id_no)))
 	
 	b<- print(ggplot(a, aes(x=Dist_CS, y=Dist_E), color=id_no)+
-	geom_point(aes(color=id_no), size=1.2)+
+	geom_point(aes(color=id_no), size=1.35)+
 	scale_color_manual(values=mypal)+
 	labs(title = i, x = "Circuitscape", y = "Euclidean",colour="Species ID")+
 	coord_cartesian(xlim = c(0, 5),ylim=c(0,210000 ))+
@@ -58,13 +58,13 @@ for (i in unique(Compl$IUCNhab)){
 	guides(colour = guide_legend(override.aes = list(size=4))))
 	
 	
-	file_name = paste0(out_path,"/", i, ".tiff", sep="")
-	print(b,tiff(file_name, width= 3000, height=2000, units="px", res=300))
+	file_name = paste0(out_path,"/", i, ".png", sep="")
+	print(b,png(file_name, width= 750, height=550))
 	dev.off()
 	}
 
-
-
+##for .tiff##
+#width= 1200, height=800, units="px", res=200
 
 	
 #GLCcodes
