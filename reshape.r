@@ -180,7 +180,7 @@ setwd("C:/Users/Konstantina/Desktop/Distance/Comparison/merged_tables")
 CS<- read.table("merged_tableCS.txt", h=T)
 E<- read.table("merged_tableE.txt", h=T)
 
-CSnE<- merge(CS,E, by= c("link_id","id_no"))
+CSnE<- merge(CS,E, by= c("id_no","link_id", "link_id"))
 
 write.table(CSnE, "CSnE.txt")
 
