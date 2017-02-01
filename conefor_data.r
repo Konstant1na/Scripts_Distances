@@ -19,9 +19,9 @@ Compl<- Compl[,c(1,3,4,6,10)]
 
 
 
-###################
-##Euclidean files##
-###################
+            ###################
+            ##Euclidean files##
+            ###################
 
 #Distances#
 
@@ -40,9 +40,9 @@ for (i in unique(Compl$id_no)){
 
 	
 	
-######################
-##Circuitscape files##
-######################
+            ######################
+            ##Circuitscape files##
+            ######################
 
 #Distances#
 
@@ -61,9 +61,9 @@ for (i in unique(Compl$id_no)){
 
 
 	
-#####################	
-####### Nodes #######	
-#####################
+            #####################	
+            ####### Nodes #######	
+            #####################
 
 library(plyr)
 library(microbenchmark)
@@ -101,62 +101,96 @@ for (i in unique(dbf_All$id_no)){
 
 	
 
-#####################
-### Command lines ###
-#####################
+            #####################
+            ### Command lines ###
+            #####################
 
 setwd("C:/Users/Konstantina/Desktop/Distance/Comparison/merged_tables")
 
-Compl<- read.table("CSnE_info.txt", h=T)
-Compl<- Compl[,c(1,3,4,6,10)]
+#Make of Com -> Dataset with all info + dispersal estimates in meters
+	#Compl<- read.table("CSnE_info.txt", h=T)
+	#Compl<- Compl[,c(1,2,3,4,5,6,10)]
 
-Dist<- read.csv("Dispersal_estimates.csv", h=T)
-Dist<- Dist[,c(5,20)]
-colnames(Dist) [1]<- "id_no"
-colnames(Dist) [2]<- "Disp_mean"
+	#Dist<- read.csv("Dispersal_estimates.csv", h=T)
+	#Dist<- Dist[,c(5,20)]
+	#colnames(Dist) [1]<- "id_no"
+	#colnames(Dist) [2]<- "Disp_mean"
 
-Com<- merge(Compl, Dist, by="id_no")
-Com$Disp_mean<- Com$Disp_mean*1000 #get distances into meters
-#write.table(Com,"CSnE_Disp.txt")
+	#Com<- merge(Compl, Dist, by="id_no")
 
-##convert dispersal distance into ohms
-#Com$Dist_E<- log(Com$Dist_E)
-
+	#Com$Disp_mean<- Com$Disp_mean*1000 #get distances into meters
+	#write.table(Com,"CSnE_Disp.txt")
 
 
 
 
+	###CONVERT DISPERSAL ESTIMATES INTO OHMS (Load datasets from fitted_lines script)
+
+Com<- read.table("CSnE_Disp.txt", h=T)
+	
+##all
+Com$Disp_mean<- log(Com$Disp_mean) #all_log
+Com$Disp_mean<- (Com$Disp_mean-1898)/34479 #all_linear
+Com$Disp_mean<- (log(Com$Disp_mean)-10.14)/0.46 #all_exponential
+
+##groups_linear
+G1$Disp_mean<- (G1$Disp_mean+44429)/149314#G1
+G2$Disp_mean<- (G2$Disp_mean+34423)/52009#G2
+G3$Disp_mean<- (G3$Disp_mean+94938)/59731#G3
+
+#groups_exponential
+G1$Disp_mean<- (log(G1$Disp_mean)-9.252)/2.274#G1
+G2$Disp_mean<- (log(G2$Disp_mean)-8.793)/1.214#G2
+G3$Disp_mean<- (log(G3$Disp_mean)-9.181)/0.681#G3
+
+#clear duplicates and merge group datasets
+G1$id_no<- factor(G1$id_no);G2$id_no<- factor(G2$id_no);G3$id_no<- factor(G3$id_no)
+t1<- table(G1$id_no);t2<- table(G2$id_no);t3<- table(G3$id_no)
+G1$id_no<- as.integer(G1$id_no);G2$id_no<- as.integer(G2$id_no);G3$id_no<- as.integer(G3$id_no)
+G1<- filter(G1,  ! id_no %in% c("22678883","22681018","22681724","22681782","22681841","22682689","22682860","22682908","22683764","22688944",
+"22706553","22707043","22707957","22710791","22713287","22714920","22715090","22715222","22716487","22717733","22717746",
+"22718031","22718783","22718787","22718791","22718921","22719083","22719104","22719298","22719558","22727786","22730755"))
+G2<- subset(G2,  ! id_no %in% c("22678883","22681782","22682689","22684160","22690628","22706553","22707043","22707957","22708037","22709909",
+"22713083","22713213","22713365","22714920","22717733","22718031","22719083","22719104","22719293","22730755","22718791","22681841"))
+G3<- subset(G3,  ! id_no %in% c("22681018","22681724","22682860","22688944","22710791","22713287","22715090","22716487","22717746","22718783",
+"22718921","22719298","22719558","22727786","22715222"))
+
+Com<- rbind(G1,G2,G3)
+
+
+
+
+
+#Use Com when running all_data and groups
+#but use 'Linear' and 'Exponential' when running for IUCNhub, DistC, Order, Family and Genus
+#which you get from the fitted_lines script
 out_path= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/command" 
+for (i in unique(Exponential$id_no)){##change here
 
-
-for (i in unique(Com$id_no)){
-
-	dt<- subset(Com, id_no==i)
+	dt<- subset(Exponential, id_no==i)##here
 	print(dt)
 	
-	a<- unique(dt$Disp_mean)
+	a<- unique(dt$Disp_meanT)
 	print(a)
 	
 	write.table(dt, paste0(out_path,"/", i, "_",a))
 	
 	}
 
-
-
 	
 setwd(out_path)
 
-if (file.exists("command_line_E.csv")) file.remove("command_line_E.csv")
+if (file.exists("command_line_CS.csv")) file.remove("command_line_CS.csv")
 file_list <- list.files()
 file_list
 
 
 dt<- strsplit(file_list, "_")
-a<- lapply(dt, function(x) {paste0("shell('C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/data/euclidean/coneforWin64.exe -nodeFile Nodes_",x[1],".txt -conFile Distances_", x[1],".txt -t dist all -confProb ",x[2]," 0.36788 -PC onlyoverall -prefix ", x[1],"')")} )
+a<- lapply(dt, function(x) {paste0("shell('C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/data/circuitscape/coneforWin64.exe -nodeFile Nodes_",x[1],".txt -conFile Distances_", x[1],".txt -t dist all -confProb ",x[2]," 0.36788 -PC onlyoverall -prefix ", x[1],"')")} )
 
 a<- (unlist(lapply(a, paste, collapse=" ")))
 
-write.csv(a, "command_line_E.csv")
+write.csv(a, "command_line_CS.csv")
 
 	
 	
