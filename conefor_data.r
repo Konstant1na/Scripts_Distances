@@ -1,12 +1,8 @@
 
-setwd("C:/Users/Konstantina/Desktop/conefor_analysis")
-a <-shell("C:/Users/Konstantina/Desktop/conefor_analysis/coneforWin64.exe -nodeFile Nodes-*.txt -conFile Distances1.txt -t dist all -confProb 200 0.36788 -PC -prefix 1")
+###############################################################
+######################## Conefor Data #########################
+###############################################################
 
-###################################################################
-###################################################################
-######################## Conefor Data #############################
-###################################################################
-###################################################################
 
 
 
@@ -54,7 +50,7 @@ for (i in unique(Compl$id_no)){
 	dt<- dt[, c(2,3,4)]
 	head(dt)
 	
-	write.table(dt, paste0(out_path,"/","Distances_", i,".txt"), col.names=F,row.names=F)
+	#write.table(dt, paste0(out_path,"/","Distances_", i,".txt"), col.names=F,row.names=F)
 	
 	}
 
@@ -82,11 +78,6 @@ dbf_All<- read.table("dbf_All", h=T)
 dbf_All<- dbf_All[,c(4,3,6)]
 colnames(dbf_All) [2] <- "from_node_.x"
 
-Compl<- read.table("CSnE_info.txt", h=T)
-Compl<- Compl[,c(1,3,4,6,10)]	
-
-
-Nodes<- merge(Compl, dbf_All, by= c("id_no", "from_node_.x"))	
 
 out_path2= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/data/nodes2"
 for (i in unique(dbf_All$id_no)){
@@ -126,7 +117,7 @@ setwd("C:/Users/Konstantina/Desktop/Distance/Comparison/merged_tables")
 
 	###CONVERT DISPERSAL ESTIMATES INTO OHMS (Load datasets from fitted_lines script)
 
-Com<- read.table("CSnE_Disp.txt", h=T)
+Com<- read.table("CSnE_Disp.txt", h=TRUE)
 	
 ##all
 Com$Disp_mean<- log(Com$Disp_mean) #all_log
@@ -161,16 +152,21 @@ Com<- rbind(G1,G2,G3)
 
 
 
-#Use Com when running all_data and groups
-#but use 'Linear' and 'Exponential' when running for IUCNhub, DistC, Order, Family and Genus
+#FOR E vs CS: Use Com when running all_data and groups
+#but use 'Linear' or 'Exponential' and 'Disp_meanT' when running for IUCNhub, DistC, Order, Family, Genus and uber
 #which you get from the fitted_lines script
-out_path= "C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/command" 
-for (i in unique(Exponential$id_no)){##change here
+#FOR CS vs BUFFER: use 'CSnBuf' and change 'Disp_meanT' to 'Disp_meanTL1/Disp_meanTL1.5/Disp_meanTL2'
 
-	dt<- subset(Exponential, id_no==i)##here
-	print(dt)
+out_path= "C:/Users/Konstantina/Desktop/Distance/Comparison/Conefor_analysis/command" 					  
+setwd("C:/Users/Konstantina/Desktop/Distance/Comparison/merged_tables")
+CSnBuf<- read.table("CSnBuf_T.txt", h=T)
+
+for (i in unique(Com$id_no)){##change here
+
+	dt<- subset(Com, id_no==i)##here
+	#print(dt)
 	
-	a<- unique(dt$Disp_meanT)
+	a<- unique(dt$Disp_mean)##here
 	print(a)
 	
 	write.table(dt, paste0(out_path,"/", i, "_",a))
@@ -180,17 +176,17 @@ for (i in unique(Exponential$id_no)){##change here
 	
 setwd(out_path)
 
-if (file.exists("command_line_CS.csv")) file.remove("command_line_CS.csv")
+if (file.exists("command_line_cs.csv")) file.remove("command_line_CS.csv")
 file_list <- list.files()
 file_list
 
 
 dt<- strsplit(file_list, "_")
-a<- lapply(dt, function(x) {paste0("shell('C:/Users/Konstantina/Desktop/Distance/Conefor_analysis/data/circuitscape/coneforWin64.exe -nodeFile Nodes_",x[1],".txt -conFile Distances_", x[1],".txt -t dist all -confProb ",x[2]," 0.36788 -PC onlyoverall -prefix ", x[1],"')")} )
+a<- lapply(dt, function(x) {paste0("shell('C:/Users/Konstantina/Desktop/Distance/Comparison/Conefor_analysis/data/circuitscape/coneforWin64.exe -nodeFile Nodes_",x[1],".txt -conFile Distances_", x[1],".txt -t dist notall -confProb ",x[2]," 0.36788 -PC -removal -prefix ", x[1],"')")} )
 
 a<- (unlist(lapply(a, paste, collapse=" ")))
 
-write.csv(a, "command_line_CS.csv")
+write.csv(a, "command_line_E.csv")
 
 	
 	
