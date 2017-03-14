@@ -21,22 +21,22 @@ setwd("C:/Users/Konstantina/Desktop/Distance/Comparison/merged_tables")
 CSnE<- read.table("CSnE.txt", h=T)
 
 #Plot all
-plot(CSnE$Dist_CS, CSnE$Dist_E)
+plot(CSnE$Dist_CS, CSnE$Dist_E)	
 
-CSnE$id_no<- as.factor(CSnE$id_no)
+CSnE$id_no<- as.factor(CSnBuf$id_no.x)
 cols = colorRampPalette(brewer.pal(12, "Paired"))
-	mypal = cols(length(unique(CSnE$id_no)))
+	mypal = cols(length(unique(CSnBuf$id_no.x)))
 	
-	ggplot(CSnE, aes(x=Dist_CS, y=Dist_E), color=id_no)+
-	geom_point(aes(color=id_no), size=1.35)+
-	scale_color_manual(values=mypal)+
-	scale_x_continuous(breaks = seq(0,5,0.1))+
-	scale_y_continuous(breaks = seq(0, 200000,10000))
-	#labs(title = i, x = "Circuitscape", y = "Euclidean",colour="Species ID")+
-	#coord_cartesian(xlim = c(0, 5),ylim=c(0,210000 ))+
-	#theme(plot.title=element_text(face = "bold"), legend.title=element_text(face="italic"),
-	#legend.key = element_rect(fill = "white"))+
-	#guides(colour = guide_legend(override.aes = list(size=4)))
+	ggplot(CSnBuf, aes(x=Dist_CS, y=effectDist1), color=id_no.x)+
+	geom_point(aes(color=id_no.x), size=1.35)+
+	#scale_color_manual(values=mypal)+
+	#scale_x_continuous(breaks = seq(0,5,0.1))+
+	#scale_y_continuous(breaks = seq(0, 200000,10000))
+	labs( x = "Circuitscape", y = "Euclidean",colour="Species ID")+
+	coord_cartesian(xlim = c(0, 5),ylim=c(0,210000 ))+
+	theme(plot.title=element_text(face = "bold"), legend.title=element_text(face="italic"),
+	legend.key = element_rect(fill = "white"))+
+	guides(colour = guide_legend(override.aes = list(size=4)))
 	
 	
 #Merge with species info
